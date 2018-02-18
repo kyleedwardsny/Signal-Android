@@ -169,7 +169,8 @@ public class ContactSelectionListFragment extends    Fragment
                                                                           GlideApp.with(this),
                                                                           null,
                                                                           new ListClickListener(),
-                                                                          isMulti());
+                                                                          isMulti(),
+                                                                          this);
     selectedContacts = adapter.getSelectedContacts();
     recyclerView.setAdapter(adapter);
     recyclerView.addItemDecoration(new StickyHeaderDecoration(adapter, true, true));
@@ -221,9 +222,11 @@ public class ContactSelectionListFragment extends    Fragment
 
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+    ContactSelectionListAdapter adapter = (ContactSelectionListAdapter) recyclerView.getAdapter();
     return new ContactsCursorLoader(getActivity(), KeyCachingService.getMasterSecret(getContext()),
                                     getActivity().getIntent().getIntExtra(DISPLAY_MODE, DISPLAY_MODE_ALL),
-                                    cursorFilter, getActivity().getIntent().getBooleanExtra(RECENTS, false));
+                                    cursorFilter, getActivity().getIntent().getBooleanExtra(RECENTS, false),
+                                    adapter.getRecentContactsLimit());
   }
 
   @Override
