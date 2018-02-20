@@ -101,7 +101,7 @@ public class ContactsCursorLoader extends CursorLoader {
         }
 
         if (count > recentContactsLimit) {
-          synthesizedContacts.addRow(new Object[]{"More...", "", ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE, "", ContactsDatabase.MORE_TYPE});
+          synthesizedContacts.addRow(new Object[]{getContext().getString(R.string.ContactsCursorLoader_more), "", ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE, "", ContactsDatabase.MORE_TYPE});
         }
 
         synthesizedContacts.addRow(new Object[] {getContext().getString(R.string.ContactsCursorLoader_contacts), "", ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE, "", ContactsDatabase.DIVIDER_TYPE});

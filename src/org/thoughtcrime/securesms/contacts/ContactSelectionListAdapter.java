@@ -32,7 +32,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.thoughtcrime.securesms.ContactSelectionListFragment;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.components.RecyclerViewFastScroller.FastScrollAdapter;
 import org.thoughtcrime.securesms.contacts.ContactSelectionListAdapter.HeaderViewHolder;
@@ -63,8 +62,6 @@ public class ContactSelectionListAdapter extends CursorRecyclerViewAdapter<ViewH
   private static final int VIEW_TYPE_DIVIDER = 1;
   private static final int VIEW_TYPE_MORE    = 2;
 
-  private static final int RECENT_CONTACTS_INCREMENT = 5;
-
   private final static int STYLE_ATTRIBUTES[] = new int[]{R.attr.contact_selection_push_user,
                                                           R.attr.contact_selection_lay_user};
 
@@ -72,12 +69,10 @@ public class ContactSelectionListAdapter extends CursorRecyclerViewAdapter<ViewH
   private final LayoutInflater    li;
   private final TypedArray        drawables;
   private final ItemClickListener clickListener;
+  private final MoreClickListener moreClickListener;
   private final GlideRequests     glideRequests;
-  private final ContactSelectionListFragment fragment;
 
   private final Set<String> selectedContacts = new HashSet<>();
-
-  private int recentContactsLimit;
 
   public abstract static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -144,13 +139,11 @@ public class ContactSelectionListAdapter extends CursorRecyclerViewAdapter<ViewH
 
     private final TextView label;
 
-    MoreViewHolder(@NonNull final View itemView) {
+    MoreViewHolder(@NonNull final View itemView, @Nullable final MoreClickListener clickListener) {
       super(itemView);
       this.label = itemView.findViewById(R.id.label);
       itemView.setOnClickListener(v -> {
-        recentContactsLimit += RECENT_CONTACTS_INCREMENT;
-        fragment.getLoaderManager().restartLoader(0, null, fragment);
-        notifyDataSetChanged();
+        if (clickListener != null) clickListener.onMoreClick();
       });
     }
 
@@ -176,17 +169,16 @@ public class ContactSelectionListAdapter extends CursorRecyclerViewAdapter<ViewH
                                      @NonNull  GlideRequests glideRequests,
                                      @Nullable Cursor cursor,
                                      @Nullable ItemClickListener clickListener,
-                                     boolean multiSelect,
-                                     ContactSelectionListFragment fragment)
+                                     @Nullable MoreClickListener moreClickListener,
+                                     boolean multiSelect)
   {
     super(context, cursor);
-    this.li                  = LayoutInflater.from(context);
-    this.glideRequests       = glideRequests;
-    this.drawables           = context.obtainStyledAttributes(STYLE_ATTRIBUTES);
-    this.multiSelect         = multiSelect;
-    this.clickListener       = clickListener;
-    this.recentContactsLimit = RECENT_CONTACTS_INCREMENT;
-    this.fragment            = fragment;
+    this.li                = LayoutInflater.from(context);
+    this.glideRequests     = glideRequests;
+    this.drawables         = context.obtainStyledAttributes(STYLE_ATTRIBUTES);
+    this.multiSelect       = multiSelect;
+    this.clickListener     = clickListener;
+    this.moreClickListener = moreClickListener;
   }
 
   @Override
@@ -204,7 +196,7 @@ public class ContactSelectionListAdapter extends CursorRecyclerViewAdapter<ViewH
     if (viewType == VIEW_TYPE_CONTACT) {
       return new ContactViewHolder(li.inflate(R.layout.contact_selection_list_item, parent, false), clickListener);
     } else if (viewType == VIEW_TYPE_MORE) {
-      return new MoreViewHolder(li.inflate(R.layout.contact_selection_list_more, parent, false));
+      return new MoreViewHolder(li.inflate(R.layout.contact_selection_list_more, parent, false), moreClickListener);
     } else {
       return new DividerViewHolder(li.inflate(R.layout.contact_selection_list_divider, parent, false));
     }
@@ -265,10 +257,6 @@ public class ContactSelectionListAdapter extends CursorRecyclerViewAdapter<ViewH
     return selectedContacts;
   }
 
-  public int getRecentContactsLimit() {
-    return recentContactsLimit;
-  }
-
   private CharSequence getSpannedHeaderString(int position) {
     final String headerString = getHeaderString(position);
     if (isPush(position)) {
@@ -311,5 +299,9 @@ public class ContactSelectionListAdapter extends CursorRecyclerViewAdapter<ViewH
 
   public interface ItemClickListener {
     void onItemClick(ContactSelectionListItem item);
+  }
+
+  public interface MoreClickListener {
+    void onMoreClick();
   }
 }
