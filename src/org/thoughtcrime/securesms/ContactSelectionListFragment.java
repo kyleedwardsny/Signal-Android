@@ -224,6 +224,11 @@ public class ContactSelectionListFragment extends    Fragment
     }
   }
 
+  public void showMoreRecentContacts() {
+    recentContactsLimit += RECENT_CONTACTS_INCREMENT;
+    getLoaderManager().restartLoader(0, null, this);
+  }
+
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
     return new ContactsCursorLoader(getActivity(),
@@ -309,8 +314,7 @@ public class ContactSelectionListFragment extends    Fragment
   private class MoreClickListener implements ContactSelectionListAdapter.MoreClickListener {
     @Override
     public void onMoreClick() {
-      recentContactsLimit += RECENT_CONTACTS_INCREMENT;
-      getLoaderManager().restartLoader(0, null, ContactSelectionListFragment.this);
+      showMoreRecentContacts();
     }
   }
 

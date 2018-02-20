@@ -148,7 +148,8 @@ public class ContactSelectionListAdapter extends CursorRecyclerViewAdapter<ViewH
     }
 
     @Override
-    public void bind(@NonNull GlideRequests glideRequests, int type, String name, String number, String label, int color, boolean multiSelect) {
+    public void bind(@NonNull GlideRequests glideRequests, int type, String name, String number,
+                     String label, int color, boolean multiSelect) {
       this.label.setText(name);
     }
 
@@ -271,7 +272,8 @@ public class ContactSelectionListAdapter extends CursorRecyclerViewAdapter<ViewH
   private @NonNull String getHeaderString(int position) {
     int contactType = getContactType(position);
 
-    if (contactType == ContactsDatabase.RECENT_TYPE || contactType == ContactsDatabase.DIVIDER_TYPE || contactType == ContactsDatabase.MORE_TYPE) {
+    if (contactType == ContactsDatabase.RECENT_TYPE || contactType == ContactsDatabase.DIVIDER_TYPE ||
+        contactType == ContactsDatabase.MORE_TYPE) {
       return " ";
     }
 

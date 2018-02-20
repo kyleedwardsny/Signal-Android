@@ -64,7 +64,8 @@ public class ContactsCursorLoader extends CursorLoader {
   private final boolean      recents;
   private final int          recentContactsLimit;
 
-  public ContactsCursorLoader(@NonNull Context context, int mode, String filter, boolean recents, int recentContactsLimit)
+  public ContactsCursorLoader(@NonNull Context context, int mode, String filter, boolean recents,
+                              int recentContactsLimit)
   {
     super(context);
 
@@ -81,9 +82,12 @@ public class ContactsCursorLoader extends CursorLoader {
     ArrayList<Cursor> cursorList       = new ArrayList<>(4);
 
     if (recents && TextUtils.isEmpty(filter)) {
-      try (Cursor recentConversations = DatabaseFactory.getThreadDatabase(getContext()).getRecentConversationList(recentContactsLimit + 1)) {
+      try (Cursor recentConversations = DatabaseFactory.getThreadDatabase(
+              getContext()).getRecentConversationList(recentContactsLimit + 1)) {
         MatrixCursor          synthesizedContacts = new MatrixCursor(CONTACT_PROJECTION);
-        synthesizedContacts.addRow(new Object[] {getContext().getString(R.string.ContactsCursorLoader_recent_chats), "", ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE, "", ContactsDatabase.DIVIDER_TYPE});
+        synthesizedContacts.addRow(new Object[] {getContext().getString(R.string.ContactsCursorLoader_recent_chats), "",
+                                                 ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE,
+                                                 "", ContactsDatabase.DIVIDER_TYPE});
 
         ThreadDatabase.Reader reader = threadDatabase.readerFor(recentConversations);
 
@@ -101,10 +105,14 @@ public class ContactsCursorLoader extends CursorLoader {
         }
 
         if (count > recentContactsLimit) {
-          synthesizedContacts.addRow(new Object[]{getContext().getString(R.string.ContactsCursorLoader_more), "", ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE, "", ContactsDatabase.MORE_TYPE});
+          synthesizedContacts.addRow(new Object[]{getContext().getString(R.string.ContactsCursorLoader_more), "",
+                                                  ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE,
+                                                  "", ContactsDatabase.MORE_TYPE});
         }
 
-        synthesizedContacts.addRow(new Object[] {getContext().getString(R.string.ContactsCursorLoader_contacts), "", ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE, "", ContactsDatabase.DIVIDER_TYPE});
+        synthesizedContacts.addRow(new Object[] {getContext().getString(R.string.ContactsCursorLoader_contacts), "",
+                                                 ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE,
+                                                 "", ContactsDatabase.DIVIDER_TYPE});
         if (synthesizedContacts.getCount() > 2) cursorList.add(synthesizedContacts);
       }
     }
